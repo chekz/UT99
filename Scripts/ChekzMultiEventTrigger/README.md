@@ -3,12 +3,6 @@ Description
 
 A normal trigger which an option to trigger up to 8 additional events with optional delays.
 
-Uses
-===============
-
-- Setting OutDelay[0] to 1.000000 and OutEvent[0] to a valid event tag will trigger OutEvent[0] after 1 second.
-- Setting OutDelay[0] to 0.000000 and OutEvent[0] to a valid event tag will trigger OutEvent[0] immediatly.
-
 Default Values
 ===============
 **ChekzMultiEventTrigger**
@@ -28,6 +22,12 @@ Default Values
 - OutEvents[5]=None
 - OutEvents[6]=None
 - OutEvents[7]=None
+
+Uses
+===============
+
+- Setting OutDelay[0] to 1.000000 and OutEvent[0] to a valid event tag will trigger OutEvent[0] after 1 second.
+- Setting OutDelay[0] to 0.000000 and OutEvent[0] to a valid event tag will trigger OutEvent[0] immediatly.
 
 How To Install
 ===============
