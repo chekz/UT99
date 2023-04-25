@@ -8,6 +8,8 @@
 
 class MultiEventTrigger extends Trigger;
 
+#exec Texture Import File=Textures\S_Trigger_Chekz.pcx Name=S_Trigger_Chekz Mips=Off Flags=2
+
 var() float OutDelays[8];
 var() name OutEvents[8];
 var int i;
@@ -83,7 +85,7 @@ defaultproperties
 	TriggerActor=None
 	TriggerActor2=None
 	InitialState="NormalTrigger"
-	Texture=Texture'Engine.S_Trigger'
+	Texture=Texture'Engine.S_Trigger_Chekz'
 
 	bEdShouldSnap=True
 	i=0
