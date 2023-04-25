@@ -24,7 +24,7 @@ Default Values
 How To Install
 ===============
 
-- Copy ChekzMultiplyKicker.u into your <UnrealTournament>/System folder
+- Copy ChekzMultiplyKicker.u into your UnrealTournament\\System folder
 - In UnrealEd click on View -> Actor Class Browser
 - Click on File -> Open Package
 - Click on ChekzMultiplyKicker.u and Open
