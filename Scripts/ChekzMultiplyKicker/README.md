@@ -3,6 +3,15 @@ Description
 
 A normal kicker with an option to kick the player using the players Velocity and a Multiplier.
 
+Default Values
+===============
+
+**ChekzMultiplyKicker**
+- Multiplier=(X=1.000000,Y=1.000000,Z=1.000000)
+- bUseKickerXVelocity=False
+- bUseKickerYVelocity=False
+- bUseKickerZVelocity=True
+
 Uses
 ===============
 
@@ -12,14 +21,6 @@ Uses
 - bUseKickerXVelocity set to False will kick the player with Player.XVelocity * Multiplier.X
 - bUseKickerYVelocity set to False will kick the player with Player.YVelocity * Multiplier.Y
 - bUseKickerZVelocity set to True will ignore the Z Multiplier and will kick the player using Kicker.Z Velocity
-
-Default Values
-===============
-
-- Multiplier=(X=1.000000,Y=1.000000,Z=1.000000)
-- bUseKickerXVelocity=False
-- bUseKickerYVelocity=False
-- bUseKickerZVelocity=True
 
 How To Install
 ===============
