@@ -10,7 +10,7 @@ Uses
 - A Multiplier of 1.000000 in the Y direction will kick the player with it's current Y Velocity
 - A Multiplier of 2.000000 in the Z direction will kick the player with twice it's current Z Velocity
 - bUseKickerXVelocity set to False will kick the player with Player.XVelocity * Multiplier.X
-- bUseKickerYVelocity set to False will kick the player Player.YVelocity * Multiplier.Y
+- bUseKickerYVelocity set to False will kick the player with Player.YVelocity * Multiplier.Y
 - bUseKickerZVelocity set to True will ignore the Z Multiplier and will kick the player using Kicker.Z Velocity
 
 Default Values
