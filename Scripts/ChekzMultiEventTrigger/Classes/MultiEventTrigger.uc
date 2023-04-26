@@ -53,11 +53,39 @@ function Touch( actor Other )
 	}
 }
 
+function TakeDamage( int Damage, Pawn instigatedBy, Vector hitlocation, 
+						Vector momentum, name damageType)
+{
+	local actor A;
+
+	if ( bInitiallyActive && (TriggerType == TT_Shoot) && (Damage >= DamageThreshold) && (instigatedBy != None) )
+	{
+		if ( ReTriggerDelay > 0 )
+		{
+			if ( Level.TimeSeconds - TriggerTime < ReTriggerDelay )
+				return;
+			TriggerTime = Level.TimeSeconds;
+		}
+		// Broadcast the Trigger message to all matching actors.
+		if( Event != '' )
+			foreach AllActors( class 'Actor', A, Event )
+				A.Trigger( instigatedBy, instigatedBy );
+
+		if( Message != "" )
+			// Send a string message to the toucher.
+			instigatedBy.Instigator.ClientMessage( Message );
+
+		if( bTriggerOnceOnly )
+			// Ignore future touches.
+			SetCollision(False);
+
+		gotostate('Dispatch');
+	}
+}
+
 state Dispatch
 {
 Begin:
-	disable('Trigger');
-
 	for( i=0; i<ArrayCount(OutEvents); i++ )
 	{
 		if( OutEvents[i] != '' )
@@ -67,8 +95,6 @@ Begin:
 				Target.Trigger( Self, Instigator );
 		}
 	}
-
-	enable('Trigger');
 }
 
 defaultproperties
