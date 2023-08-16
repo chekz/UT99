@@ -4,76 +4,97 @@
 // ProjectileSpawner,damn.. this 5 year ol' thingy.. I was just a bad coder xD
 //
 // Edited by ch3kz
-// Added ability to get projectile to follow player
-class ProjectileSpawner2 expands Effects;
+// Renamed some variables
+// Added ability to get projectile to chase player
+// Set bEdShouldSnap, bDirectional and bHidden to True
+class ProjectileSpawner2 extends Effects;
 
 var() class<projectile> ProjToSpawn;
 var() bool bOnceOnly;
 var() bool bFollowInstigator;
-var() float RepeatDelay,ProjDrawscale,ProjectileVelocity,ProjectileDamage;		
-var() int ProjMomentumTrans,SpawnLocForward; 	
-var() float MaxProjVelo,ProjLifeSpan;
+var() float RepeatDelay,ProjDrawScale,ProjSpeed,ProjDamage;
+var() int ProjMomentumTransfer,ProjSpawnLocForward; 	
+var() float ProjMaxSpeed, ProjLifeSpan;
 var() sound ProjSpawnSound,ProjImpactSound,ProjMiscSound; 
-var() class<decal> ExploDecalClass;
+var() class<decal> ProjExplosionDecal;
 
-var Projectile p;
-var float ProjectileEndTime;
+var projectile Proj;
+var pawn PawnInstigator;
+var float ProjEndTime;
 
-simulated function BeginPlay()
-{
-	Super.BeginPlay();
-	Disable('Tick');
-}
+var vector SeekingDir;
 
 function Trigger( actor Other, pawn EventInstigator )
 {
-	Instigator = EventInstigator;
-	settimer(repeatdelay,bonceonly);
+	PawnInstigator = EventInstigator;
+	SetTimer(RepeatDelay,bOnceOnly);
 }
 
-simulated function Tick(float DeltaTime)
+function Timer()
 {
-	if (bFollowInstigator && p != None)
+	Proj=Spawn(ProjToSpawn,,'', Location+vector(Rotation)*ProjSpawnLocForward);
+	SetupProjectile();
+}
+
+function Tick(float DeltaTime)
+{
+	if (bFollowInstigator && Proj != None)
 		UpdateProjectile();
 
-	if (Level.TimeSeconds > ProjectileEndTime)
+	if (Proj.bDeleteMe || Level.TimeSeconds > ProjEndTime)
 		Disable('Tick');
 }
 
-function UpdateProjectile()
+function SetupProjectile()
 {
-	local vector SeekingDir;
-
-	SeekingDir = Normal(Instigator.Location - p.Location);
-
-	p.Velocity =  p.Speed * Normal(SeekingDir * 0.47 * p.Speed + p.Velocity);
-	SetRotation(rotator(p.Velocity));
-}
-
-simulated function Timer()
-{
-	p=Spawn(projtospawn,,'', Location+vector(Rotation)*SpawnLocForward);
-	p.Speed=ProjectileVelocity;	
-	p.Damage=ProjectileDamage;
-	p.Drawscale=ProjDrawscale;
-	p.MomentumTransfer=ProjMomentumTrans;
-	p.MaxSpeed=MaxProjVelo;
-	p.lifespan = ProjLifeSpan;
-	p.impactsound=ProjImpactSound;
-	p.MiscSound=ProjMiscSound;
-	p.SpawnSound=ProjSpawnSound;
-	p.explosiondecal=ExploDecalClass;
+	Proj.Speed=ProjSpeed;	
+	Proj.Damage=ProjDamage;
+	Proj.DrawScale=ProjDrawScale;
+	Proj.MomentumTransfer=ProjMomentumTransfer;
+	Proj.MaxSpeed=ProjMaxSpeed;
+	Proj.LifeSpan = ProjLifeSpan;
+	Proj.ImpactSound=ProjImpactSound;
+	Proj.MiscSound=ProjMiscSound;
+	Proj.SpawnSound=ProjSpawnSound;
+	Proj.ExplosionDecal=ProjExplosionDecal;
+	Proj.RemoteRole=ROLE_DumbProxy;
 
 	if (bFollowInstigator)
 	{
-		ProjectileEndTime = Level.TimeSeconds + ProjLifeSpan;
+		ProjEndTime = Level.TimeSeconds + ProjLifeSpan;
 		Enable('Tick');
 	}
 }
 
+function UpdateProjectile()
+{
+	SeekingDir = Normal(PawnInstigator.Location - Proj.Location);
+	Proj.Velocity =  Proj.Speed * Normal(SeekingDir * 0.47 * Proj.Speed + Proj.Velocity);
+	SetRotation(rotator(Proj.Velocity));
+}
+
 defaultproperties
 {
+	ProjToSpawn=None
+	bOnceOnly=False
 	bFollowInstigator=False
-	bEdShouldSnap=True
+	RepeatDelay=0.000000
+	ProjDrawScale=0.000000
+	ProjSpeed=0.000000
+	ProjDamage=0.000000
+	ProjMomentumTransfer=0
+	ProjSpawnLocForward=0
+	ProjMaxSpeed=0.000000
+	ProjLifeSpan=0.000000
+	ProjSpawnSound=None
+	ProjImpactSound=None
+	ProjMiscSound=None
+	ProjExplosionDecal=None
+	Proj=None
+	ProjEndTime=0.000000
+
+	bHidden=True
+	bDirectional=True
 	DrawType=DT_Sprite
+	bEdShouldSnap=True
 }

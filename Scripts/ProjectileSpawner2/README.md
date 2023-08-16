@@ -24,3 +24,8 @@ How To Install
 - Click on ProjectileSpawner2.u and Open
 - Expand Actor -> Effects -> and Click on ProjectileSpawner2.ProjectileSpawner2
 - Right Click in UnrealEd and Click on 'Add ProjectileSpawner2.ProjectileSpawner2 here'
+
+Example Map
+===============
+**CTF-BT-ProjectileSpawner2.unr**
+- Touching the white platform in the middle of the room will spawn a Shock Projectile which chases the Instigator
