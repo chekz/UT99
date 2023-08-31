@@ -1,9 +1,9 @@
 //=============================================================================
-// Made by ch3kz
+// Author: chekz
 //=============================================================================
 class D_UT_SuperRing extends UT_SuperRing;
 
 defaultproperties
 {
-      Skin=Texture'ChekzDamageHealRifle.Effects.D_ASasRing'
+      Skin=Texture'ChekzDamageHealShockRifle.Effects.D_ASasRing'
 }

@@ -1,9 +1,11 @@
 //=============================================================================
-// Made By ch3kz
+// Author: chekz
 //=============================================================================
-
 class HealBeam extends ShockBeam;
 
+//=============================================================================
+// Spawns Heal Beam
+//=============================================================================
 simulated function Timer()
 {
 	local HealBeam r;
@@ -19,5 +21,5 @@ simulated function Timer()
 
 defaultproperties
 {
-      Texture=Texture'ChekzDamageHealRifle.Effects.h_jenergy2'
+      Texture=Texture'ChekzDamageHealShockRifle.Effects.h_jenergy2'
 }
