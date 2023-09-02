@@ -106,22 +106,18 @@ function Fire( float Value )
 
 //=============================================================================
 // Calls PlayDHRFiring(sound FireSound, float FireSpeed)
-// Plays DamageBeamFireSound
 //=============================================================================
 simulated function PlayFiring()
 {
 	PlayDHRFiring(FireSound, class'DamageHealShockRifleMutator'.default.DamageBeamFireSpeed);
-	// PlayOwnedSound(class'DamageHealShockRifleMutator'.default.DamageBeamFireSound);
 }
 
 //=============================================================================
 // Calls PlayDHRFiring(sound FireSound, float FireSpeed)
-// Plays HealBeamFireSound
 //=============================================================================
 simulated function PlayAltFiring()
 {
-	PlayDHRFiring(FireSound, class'DamageHealShockRifleMutator'.default.HealBeamFireSpeed);
-	// PlayOwnedSound(class'DamageHealShockRifleMutator'.default.HealBeamFireSound);
+	PlayDHRFiring(AltFireSound, class'DamageHealShockRifleMutator'.default.HealBeamFireSpeed);
 }
 
 //=============================================================================

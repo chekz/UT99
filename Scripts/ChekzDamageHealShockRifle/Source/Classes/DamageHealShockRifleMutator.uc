@@ -137,7 +137,6 @@ defaultproperties
       bChangeGroundSpeed=True
       bChangeWaterSpeed=True
       SpeedMultiplier=5.000000
-      DamageBeamFireSpeed=1.000000
       HealBeamFireSound=Sound'ChekzDamageHealShockRifle.FireSounds.HealBeamFireSound'
       DamageBeamFireSound=Sound'ChekzDamageHealShockRifle.FireSounds.DamageBeamFireSound'
       WeaponName=DamageHealShockRifle
