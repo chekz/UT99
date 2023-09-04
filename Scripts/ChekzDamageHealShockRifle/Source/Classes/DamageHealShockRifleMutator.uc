@@ -44,10 +44,11 @@ function PostBeginPlay()
 {
 	if (Initialized)
 		return;
-	Initialized = True;
+
 	SetDefaults();
-	
 	Level.Game.RegisterDamageMutator(Self);
+
+	Initialized = True;
 }
 
 //=============================================================================
