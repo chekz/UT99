@@ -12,22 +12,24 @@ class DamageHealShockRifleMutator extends Arena;
 //=============================================================================
 // Configurable Properties
 //=============================================================================
-var() int DamageAmount;
-var() float DamageBeamHitDamage;
-var() float DamageBeamFireSpeed;
+var(DamageHealShockRiflePlayerSettings) int MaxHealth;
+var(DamageHealShockRiflePlayerSettings) int StartingHealth;
 
-var() int HealAmount;
-var() float HealBeamHitDamage;
-var() float HealBeamFireSpeed;
+var(DamageHealShockRilfeSettings) int DamageAmount;
+var(DamageHealShockRilfeSettings) float DamageBeamHitDamage;
+var(DamageHealShockRilfeSettings) float DamageBeamFireSpeed;
 
-var() bool bChangeAirSpeed;
-var() bool bChangeGroundSpeed;
-var() bool bChangeWaterSpeed;
+var(DamageHealShockRilfeSettings) int HealAmount;
+var(DamageHealShockRilfeSettings) float HealBeamHitDamage;
+var(DamageHealShockRilfeSettings) float HealBeamFireSpeed;
 
-var() float SpeedMultiplier;
+var(DamageHealShockRilfeSettings) sound HealBeamFireSound;
+var(DamageHealShockRilfeSettings) sound DamageBeamFireSound;
 
-var() sound HealBeamFireSound;
-var() sound DamageBeamFireSound;
+var(DamageHealShockRilfeSpeedSettings) bool bChangeAirSpeed;
+var(DamageHealShockRilfeSpeedSettings) bool bChangeGroundSpeed;
+var(DamageHealShockRilfeSpeedSettings) bool bChangeWaterSpeed;
+var(DamageHealShockRilfeSpeedSettings) float SpeedMultiplier;
 
 //=============================================================================
 // Non-Configurable Properties
@@ -56,25 +58,28 @@ function PostBeginPlay()
 //=============================================================================
 function SetDefaults()
 {
-	Default.DamageBeamFireSpeed = DamageBeamFireSpeed;
-	Default.DamageBeamHitDamage = DamageBeamHitDamage;
-	Default.DamageBeamFireSpeed = DamageBeamFireSpeed;
+	default.MaxHealth = MaxHealth;
+	default.StartingHealth = StartingHealth;
 
-	Default.HealAmount = HealAmount;
-	Default.HealBeamHitDamage = HealBeamHitDamage;
-	Default.HealBeamFireSpeed = HealBeamFireSpeed;
+	default.DamageBeamFireSpeed = DamageBeamFireSpeed;
+	default.DamageBeamHitDamage = DamageBeamHitDamage;
+	default.DamageBeamFireSpeed = DamageBeamFireSpeed;
 
-	Default.bChangeAirSpeed = bChangeAirSpeed;
-	Default.bChangeGroundSpeed = bChangeGroundSpeed;
-	Default.bChangeWaterSpeed = bChangeWaterSpeed;
+	default.HealAmount = HealAmount;
+	default.HealBeamHitDamage = HealBeamHitDamage;
+	default.HealBeamFireSpeed = HealBeamFireSpeed;
 
-	Default.SpeedMultiplier = SpeedMultiplier;
+	default.HealBeamFireSound = HealBeamFireSound;
+	default.DamageBeamFireSound = DamageBeamFireSound;
 
-	Default.HealBeamFireSound = HealBeamFireSound;
-	Default.DamageBeamFireSound = DamageBeamFireSound;
+	default.bChangeAirSpeed = bChangeAirSpeed;
+	default.bChangeGroundSpeed = bChangeGroundSpeed;
+	default.bChangeWaterSpeed = bChangeWaterSpeed;
+
+	default.SpeedMultiplier = SpeedMultiplier;
 
 	bCanUpdateOwnerSpeed = (bChangeAirSpeed || bChangeGroundSpeed || bChangeWaterSpeed);
-	Default.bCanUpdateOwnerSpeed = bCanUpdateOwnerSpeed;
+	default.bCanUpdateOwnerSpeed = bCanUpdateOwnerSpeed;
 }
 
 //=============================================================================
@@ -127,18 +132,20 @@ function MutatorTakeDamage(out int ActualDamage, Pawn Victim, Pawn InstigatedBy,
 
 defaultproperties
 {
+      MaxHealth=100
+      StartingHealth=100
       DamageAmount=20
       DamageBeamHitDamage=100.000000
       DamageBeamFireSpeed=1.000000
       HealAmount=20
       HealBeamHitDamage=50.000000
       HealBeamFireSpeed=1.000000
+      HealBeamFireSound=Sound'ChekzDamageHealShockRifle.FireSounds.HealBeamFireSound'
+      DamageBeamFireSound=Sound'ChekzDamageHealShockRifle.FireSounds.DamageBeamFireSound'
       bChangeAirSpeed=True
       bChangeGroundSpeed=True
       bChangeWaterSpeed=True
       SpeedMultiplier=5.000000
-      HealBeamFireSound=Sound'ChekzDamageHealShockRifle.FireSounds.HealBeamFireSound'
-      DamageBeamFireSound=Sound'ChekzDamageHealShockRifle.FireSounds.DamageBeamFireSound'
       WeaponName=DamageHealShockRifle
       DefaultWeapon=Class'ChekzDamageHealShockRifle.DamageHealShockRifle'
 }

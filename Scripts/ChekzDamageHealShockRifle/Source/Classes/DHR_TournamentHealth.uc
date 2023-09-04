@@ -10,7 +10,6 @@ class DHR_TournamentHealth extends PickUp
 // Configurable Properties
 //=============================================================================
 var() int HealingAmount;
-var() bool bSuperHeal;
 
 //=============================================================================
 // Bot Desireability code
@@ -21,7 +20,6 @@ event float BotDesireability(Pawn Bot)
 	local int HealMax;
 
 	HealMax = Bot.Default.Health;
-	if (bSuperHeal) HealMax = Min(199, HealMax * 2.0);
 	desire = Min(HealingAmount, HealMax - Bot.Health);
 
 	if ( (Bot.Weapon != None) && (Bot.Weapon.AIRating > 0.5) )
@@ -56,26 +54,29 @@ auto state Pickup
 	function Touch( actor Other )
 	{
 		local int HealMax;
+		local int UpdatedHealingAmount;
 		local Pawn P;
 
 		if ( ValidTouch(Other) ) 
 		{	
 			P = Pawn(Other);	
-			HealMax = P.default.health;
-			if (bSuperHeal) HealMax = Min(199, HealMax * 2.0);
+			HealMax = class'DamageHealShockRifleMutator'.default.MaxHealth;
 			if (P.Health < HealMax) 
 			{
 				if (Level.Game.LocalLog != None)
 					Level.Game.LocalLog.LogPickup(Self, P);
 				if (Level.Game.WorldLog != None)
 					Level.Game.WorldLog.LogPickup(Self, P);
-				P.Health += HealingAmount;
+
+				UpdatedHealingAmount = class'DamageHealShockRifleUtils'.static.GetHealAmount(P, HealingAmount, HealMax);
+
+				P.Health += UpdatedHealingAmount;
 
 				class'DamageHealShockRifleUtils'.static.UpdatePlayerSpeed(P,
-					HealingAmount,
+					UpdatedHealingAmount,
 					-class'DamageHealShockRifleMutator'.default.SpeedMultiplier
 				);
-				if (P.Health > HealMax) P.Health = HealMax;
+
 				PlayPickupMessage(P);
 				PlaySound (PickupSound,,2.5);
 				Other.MakeNoise(0.2);		
@@ -88,7 +89,6 @@ auto state Pickup
 defaultproperties
 {
       HealingAmount=20
-      bSuperHeal=False
       PickupMessage="You picked up a Health Pack"
       RespawnTime=20.000000
       MaxDesireability=0.500000

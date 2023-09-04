@@ -70,8 +70,6 @@ var float HealFlashScale;
 
 var playerpawn DHROwner;
 
-var bool Initialized;
-
 //=============================================================================
 // Fires damage beam
 // Damages Owner
@@ -155,26 +153,33 @@ function AltFire( float Value )
 
 	DHROwner.ClientFlash(HealFlashScale, HealFog);
 
-	HealOwner();
-
-	class'DamageHealShockRifleUtils'.static.UpdatePlayerSpeed(
-		DHROwner,
-		class'DamageHealShockRifleMutator'.default.HealAmount,
-		-class'DamageHealShockRifleMutator'.default.SpeedMultiplier);
+	UpdateHealthAndSpeed();
 }
 
 //=============================================================================
 // Heals Owner
+// Updates Owner Speed
 //=============================================================================
-function HealOwner()
+function UpdateHealthAndSpeed()
 {
-	if (DHROwner.Health == DHROwner.default.Health)
+	local int HealAmount;
+	local int MaxHealth;
+
+	MaxHealth = class'DamageHealShockRifleMutator'.default.MaxHealth;
+
+	if (DHROwner.Health == MaxHealth)
 		return;
 
-	if (DHROwner.Health + class'DamageHealShockRifleMutator'.default.HealAmount > DHROwner.default.Health)
-		DHROwner.Health = DHROwner.default.Health;
-	else
-		DHROwner.Health += class'DamageHealShockRifleMutator'.default.HealAmount;
+	HealAmount = class'DamageHealShockRifleMutator'.default.HealAmount;
+	HealAmount = class'DamageHealShockRifleUtils'.static.GetHealAmount(DHROwner, HealAmount, MaxHealth);
+
+	DHROwner.Health += HealAmount;
+
+	class'DamageHealShockRifleUtils'.static.UpdatePlayerSpeed(
+		DHROwner,
+		HealAmount,
+		-class'DamageHealShockRifleMutator'.default.SpeedMultiplier
+	);
 }
 
 //=============================================================================
@@ -293,9 +298,9 @@ state Active
 	}
 
 Begin:
-	FinishAnim();
 	DHROwner = PlayerPawn(Owner);
-	ResetDHROwner();
+	DHROwner.Health = class'DamageHealShockRifleMutator'.default.StartingHealth;
+	FinishAnim();
 	if ( bChangeWeapon )
 		GotoState('DownWeapon');
 	bWeaponUp = True;
@@ -319,7 +324,6 @@ Begin:
 
 defaultproperties
 {
-      Initialized=False
       HealFog=(X=0.000000,Y=255.000000,Z=50.000000)
       bHealBeamFired=False
       bDamageBeamFired=False
