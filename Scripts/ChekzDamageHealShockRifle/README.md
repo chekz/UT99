@@ -1,5 +1,5 @@
 # Description
-The Damage Heal Shock Rifle (DHR). Primary Fire shoots a damage beam which damages the shooter. Alt Fire shoots a heal beam which heals the shooter. By default a players air, ground and water speed will increase when damaged and slow down when healed but can be turned off in DamageHealShockRilfeMutator -> DamageHealShockRilfeSpeedSettings.
+The Damage Heal Shock Rifle (DHR). Primary Fire shoots a damage beam which damages the shooter. Alt Fire shoots a heal beam which heals the shooter. By default a players air, ground and water speed will increase when damaged and decrease when healed but can be turned off in DamageHealShockRilfeMutator -> DamageHealShockRilfeSpeedSettings.
 
 # How To Install
 A sample map has been added to show how to setup the DamageHealShockRifle.
