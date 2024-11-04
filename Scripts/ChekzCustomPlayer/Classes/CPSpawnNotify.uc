@@ -2,7 +2,7 @@
 // CPSpawnNotify: Replaces current player with custom player.
 //
 // Author: ch3kz
-// Note: The idea and skelton of this project was made by slade see
+// Note: The idea and skeleton of this project was made by slade see
 // sldPlayerExt at
 // https://discord.com/channels/818071527144554497/945009319294926848/1212817775656177664)
 //=============================================================================
@@ -11,16 +11,24 @@ class CPSpawnNotify expands SpawnNotify;
 //=============================================================================
 // Class and UED properties.
 //=============================================================================
-var(PlayerMovement) bool bEnableDodgeBot;
-var(PlayerMovement) bool bEnableWallDodge;
-var(PlayerMovement) int WallDodgeLimit;
-var(PlayerMovement) bool bDisableDodge;
-var(PlayerMovement) bool bDisableWalk;
-var(PlayerMovement) bool bDisableJump;
-var(PlayerMovement) bool bEnableDodgeLimit;
-var(PlayerMovement) int DodgeLimit;
-var(PlayerMovement) bool bEnableCrouchDodge;
-var(PlayerMovement) bool bEnableAirDodge;
+var(CPWallDodge) bool bEnableWallDodge;
+var(CPWallDodge) int WallDodgeLimit;
+var bool bDisableWallDodgeDodgeDelay;
+var(CPWallDodge) bool bEnableBounceAfterWallDodge;
+
+var(CPAirDodge) bool bEnableAirDodge;
+var(CPAirDodge) int AirDodgeLimit;
+var(CPAirDodge) bool bEnableBounceAfterAirDodge;
+
+var(CPDodgeBot) bool bEnableDodgeBot;
+
+var(CPMovement) bool bDisableDodge;
+var(CPMovement) bool bDisableWalk;
+var(CPMovement) bool bDisableJump;
+var(CPMovement) bool bEnableCrouchDodge;
+var(CPMovement) bool bEnableBounceAfterGroundDodge;
+var(CPMovement) bool bEnableDodgeLimit;
+var(CPMovement) int DodgeLimit;
 
 //=============================================================================
 // Class properties.
@@ -96,6 +104,7 @@ function SetCPMoveProps()
 	CP.bEnableDodgeBot = bEnableDodgeBot;
 	CP.bEnableWallDodge = bEnableWallDodge;
 	CP.WallDodgeLimit = WallDodgeLimit;
+	CP.bDisableWallDodgeDodgeDelay = bDisableWallDodgeDodgeDelay;
 	CP.bDisableDodge = bDisableDodge;
 	CP.bDisableWalk = bDisableWalk;
 	CP.bDisableJump = bDisableJump;
@@ -103,6 +112,26 @@ function SetCPMoveProps()
 	CP.DodgeLimit = DodgeLimit;
 	CP.bEnableCrouchDodge = bEnableCrouchDodge;
 	CP.bEnableAirDodge = bEnableAirDodge;
+	CP.AirDodgeLimit = AirDodgeLimit;
+	CP.bEnableBounceAfterGroundDodge = bEnableBounceAfterGroundDodge;
+	CP.bEnableBounceAfterWallDodge = bEnableBounceAfterWallDodge;
+	CP.bEnableBounceAfterAirDodge = bEnableBounceAfterAirDodge;
+
+	CP.bEnableDodgeBotOrig = bEnableDodgeBot;
+	CP.bEnableWallDodgeOrig = bEnableWallDodge;
+	CP.WallDodgeLimitOrig = WallDodgeLimit;
+	CP.bDisableWallDodgeDodgeDelayOrig = bDisableWallDodgeDodgeDelay;
+	CP.bDisableDodgeOrig = bDisableDodge;
+	CP.bDisableWalkOrig = bDisableWalk;
+	CP.bDisableJumpOrig = bDisableJump;
+	CP.bEnableDodgeLimitOrig = bEnableDodgeLimit;
+	CP.DodgeLimitOrig = DodgeLimit;
+	CP.bEnableCrouchDodgeOrig = bEnableCrouchDodge;
+	CP.bEnableAirDodgeOrig = bEnableAirDodge;
+	CP.AirDodgeLimitOrig = AirDodgeLimit;
+	CP.bEnableBounceAfterGroundDodgeOrig = bEnableBounceAfterGroundDodge;
+	CP.bEnableBounceAfterWallDodgeOrig = bEnableBounceAfterWallDodge;
+	CP.bEnableBounceAfterAirDodgeOrig = bEnableBounceAfterAirDodge;
 }
 
 //=============================================================================
@@ -138,14 +167,19 @@ function SetCPSoundProps(Actor A)
 
 defaultproperties
 {
-      bEnableDodgeBot=False
       bEnableWallDodge=False
       WallDodgeLimit=1
+      bDisableWallDodgeDodgeDelay=True
+      bEnableBounceAfterWallDodge=True
+      bEnableAirDodge=False
+      AirDodgeLimit=1
+      bEnableBounceAfterAirDodge=True
+      bEnableDodgeBot=False
       bDisableDodge=False
       bDisableWalk=False
       bDisableJump=False
       bEnableCrouchDodge=False
-      bEnableAirDodge=False
+      bEnableBounceAfterGroundDodge=False
       bEnableDodgeLimit= False
       DodgeLimit=5
       CP=None

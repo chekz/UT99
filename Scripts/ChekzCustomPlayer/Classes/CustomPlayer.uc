@@ -11,21 +11,61 @@ class CustomPlayer extends TournamentPlayer;
 // Class properties.
 //=============================================================================
 var bool bEnableDodgeBot;
+var bool bEnableDodgeBotOrig;
+
 var bool bEnableWallDodge;
+var bool bEnableWallDodgeOrig;
 
 var bool bWasWallDodge;
+
 var int WallDodgeLimit;
+var int WallDodgeLimitOrig;
+
 var int WallDodgesRemaining;
 
+var bool bDisableWallDodgeDodgeDelay;
+var bool bDisableWallDodgeDodgeDelayOrig;
+
 var bool bDisableDodge;
+var bool bDisableDodgeOrig;
+
 var bool bDisableWalk;
+var bool bDisableWalkOrig;
+
 var bool bDisableJump;
+var bool bDisableJumpOrig;
 
 var bool bEnableDodgeLimit;
+var bool bEnableDodgeLimitOrig;
+
 var int DodgeLimit;
+var int DodgeLimitOrig;
 
 var bool bEnableCrouchDodge;
+var bool bEnableCrouchDodgeOrig;
+
 var bool bEnableAirDodge;
+var bool bEnableAirDodgeOrig;
+
+var int AirDodgeLimit;
+var int AirDodgeLimitOrig;
+
+var int AirDodgesRemaining;
+
+var bool bWasAirDodge;
+
+var bool bWasGroundDodge;
+
+var bool bEnableBounceAfterGroundDodge;
+var bool bEnableBounceAfterGroundDodgeOrig;
+
+var bool bEnableBounceAfterWallDodge;
+var bool bEnableBounceAfterWallDodgeOrig;
+
+var bool bEnableBounceAfterAirDodge;
+var bool bEnableBounceAfterAirDodgeOrig;
+
+var bool bTriggerEnabled;
 
 replication
 {
@@ -36,13 +76,18 @@ replication
 		bEnableDodgeBot,
 		bEnableWallDodge,
 		WallDodgeLimit,
+		bDisableWallDodgeDodgeDelay,
 		bDisableDodge,
 		bDisableWalk,
 		bDisableJump,
 		bEnableDodgeLimit,
 		DodgeLimit,
 		bEnableCrouchDodge,
-		bEnableAirDodge;
+		bEnableAirDodge,
+		AirDodgeLimit,
+		bEnableBounceAfterGroundDodge,
+		bEnableBounceAfterWallDodge,
+		bEnableBounceAfterAirDodge;
 }
 
 // Player movement.
@@ -137,20 +182,47 @@ ignores SeePlayer, HearNoise, Bump;
 	function Landed(vector HitNormal)
 	{
 		Global.Landed(HitNormal);
-		if (DodgeDir == DODGE_Active)
+		if (bWasGroundDodge)
 		{
 			DodgeDir = DODGE_Done;
 			DodgeClickTimer = 0.0;
-			Velocity *= 0.1;
+
+			if (!bWasAirDodge && !bWasWallDodge && !bEnableBounceAfterGroundDodge)
+				Velocity *= 0.1;
+			
+			bWasGroundDodge = false;
+		}
+		else if (bWasWallDodge)
+		{
+			DodgeDir = DODGE_Done;
+			DodgeClickTimer = 0.0;
+
+			if (!bEnableBounceAfterWallDodge)
+				Velocity *= 0.1;
+		}
+		else if (bWasAirDodge)
+		{
+			DodgeDir = DODGE_Done;
+			DodgeClickTimer = 0.0;
+
+			if (!bEnableBounceAfterAirDodge)
+				Velocity *= 0.1;
 		}
 		else
 			DodgeDir = DODGE_None;
 
 		// Resets variables for the next wall dodge.
-		if (bEnableWallDodge && bWasWallDodge) 
+		if (bWasWallDodge) 
 		{
 			WallDodgesRemaining = WallDodgeLimit;
-			bWasWallDodge = False;
+			bWasWallDodge = false;
+		}
+
+		// Resets variables for the next air dodge.
+		if (bWasAirDodge)
+		{
+			AirDodgesRemaining = AirDodgeLimit;
+			bWasAirDodge = false;
 		}
 	}
 
@@ -166,41 +238,42 @@ ignores SeePlayer, HearNoise, Bump;
 			return;
 
 		// Air dodge check.
-		if (bEnableAirDodge)
+		if (bEnableAirDodge && Physics == PHYS_FALLING)
 		{
-			if (Physics != PHYS_Walking && Physics != PHYS_FALLING)
+			if (AirDodgesRemaining == 0)
 				return;
+
+			bWasAirDodge = True;
 		} 	
 		// Wall dodge check.
-		else if (bEnableWallDodge)
+		else if (bEnableWallDodge && Physics == PHYS_FALLING)
 		{
-			if (Physics != PHYS_Walking && Physics != PHYS_FALLING && WallDodgesRemaining != 0)
+			if (WallDodgesRemaining == 0)
 				return;
 
-			if (Physics == PHYS_Falling)
-			{
-				GetAxes(Rotation, X, Y, Z);
+			GetAxes(Rotation, X, Y, Z);
 
-				if (DodgeMove == DODGE_Forward)
-					TraceEnd = -X;
-				else if (DodgeMove == DODGE_Back)
-					TraceEnd = X;
-				else if (DodgeMove == DODGE_Left)
-					TraceEnd = -Y;
-				else if (DodgeMove == DODGE_Right)
-					TraceEnd = Y;
-				TraceStart = Location - CollisionHeight*vect(0,0,1) + TraceEnd*CollisionRadius;
-				TraceEnd = TraceStart + TraceEnd*32.0;
-				HitActor = Trace(HitLocation, HitNormal, TraceEnd, TraceStart, false, vect(1,1,1));
-				if ((HitActor == none) || (HitActor != Level && Mover(HitActor) == none))
-					return;
+			if (DodgeMove == DODGE_Forward)
+				TraceEnd = -X;
+			else if (DodgeMove == DODGE_Back)
+				TraceEnd = X;
+			else if (DodgeMove == DODGE_Left)
+				TraceEnd = -Y;
+			else if (DodgeMove == DODGE_Right)
+				TraceEnd = Y;
+			TraceStart = Location - CollisionHeight*vect(0,0,1) + TraceEnd*CollisionRadius;
+			TraceEnd = TraceStart + TraceEnd*32.0;
+			HitActor = Trace(HitLocation, HitNormal, TraceEnd, TraceStart, false, vect(1,1,1));
+			if ((HitActor == none) || (HitActor != Level && Mover(HitActor) == none))
+				return;
 
-				bWasWallDodge = True;
-				TakeFallingDamage();
-			}
+			bWasWallDodge = True;
+			TakeFallingDamage();
 		}
 		// Normal dodge check.
-		else if (Physics != PHYS_Walking)
+		else if (Physics == PHYS_Walking)
+			bWasGroundDodge = True;
+		else
 			return;
 
 		GetAxes(Rotation,X,Y,Z);
@@ -220,11 +293,29 @@ ignores SeePlayer, HearNoise, Bump;
 			ClientMessage("Dodges Remaining: "$DodgeLimit);
 		}
 
+		if (bWasWallDodge)
+		{
+			if (!bDisableWallDodgeDodgeDelay)
+			{
+				DodgeDir = DODGE_Done;
+				DodgeClickTimer = 0.0;
+			}
+			WallDodgesRemaining -= 1;
+		}
+		else if (bWasAirDodge)
+		{
+			DodgeDir = DODGE_Done;
+			DodgeClickTimer = 0.0;
+			AirDodgesRemaining -= 1;
+		}
+
 		Velocity.Z = 160;
 
 		PlaySound(JumpSound, SLOT_Talk, 1.0, true, 800, 1.0 );
 		PlayDodge(DodgeMove);
-		DodgeDir = DODGE_Active;
+
+		if (!bWasWallDodge && !bWasAirDodge)
+			DodgeDir = DODGE_Active;
 		SetPhysics(PHYS_Falling);
 	}
 
@@ -236,7 +327,7 @@ ignores SeePlayer, HearNoise, Bump;
 		Acceleration = NewAccel;
 		bIsTurning = ( Abs(DeltaRot.Yaw/DeltaTime) > 5000 );
 
-		if ( (DodgeMove == DODGE_Active) && (Physics == PHYS_Falling) )
+		if ( (DodgeMove == DODGE_Active) && (Physics == PHYS_Falling) && !bEnableWallDodge  && !bEnableAirDodge )
 			DodgeDir = DODGE_Active;
 		else if ( (DodgeMove != DODGE_None) && (DodgeMove < DODGE_Active))
 		{
@@ -246,22 +337,11 @@ ignores SeePlayer, HearNoise, Bump;
 				// Dodge limit check.
 				if (bEnableDodgeLimit && DodgeLimit > 0)
 					Dodge(DodgeMove);
+					
 				// Normal dodge check.
 				else if (!bEnableDodgeLimit)
 					Dodge(DodgeMove);
 			}
-		}
-
-		// Update WallDodgesRemaining. Move to dodge function?
-		if (bEnableWallDodge
-			&& DodgeDir == DODGE_Active
-			&& WallDodgesRemaining > 0
-			&& Physics == PHYS_Falling
-			&& bWasWallDodge
-		)
-		{
-			WallDodgesRemaining -= 1;
-			DodgeDir = DODGE_None;
 		}
 
 		// DodgeBot check.
@@ -273,7 +353,6 @@ ignores SeePlayer, HearNoise, Bump;
 			else if (!bEnableDodgeLimit)
 				Dodge(DODGE_Forward);
 		}
-			
 
 		// Disable jump check.
 		if (bPressedJump && !bDisableJump)
@@ -505,6 +584,7 @@ ignores SeePlayer, HearNoise, Bump;
 		bPressedJump = false;
 
 		WallDodgesRemaining = WallDodgeLimit;
+		AirDodgesRemaining = AirDodgeLimit;
 
 		if (Physics != PHYS_Falling) SetPhysics(PHYS_Walking);
 		if ( !IsAnimating() )
@@ -518,7 +598,52 @@ ignores SeePlayer, HearNoise, Bump;
 	}
 }
 
+simulated state Dying
+{
+ignores SeePlayer, HearNoise, KilledBy, Bump, HitWall, HeadZoneChange, FootZoneChange, ZoneChange, SwitchWeapon, Falling, PainTimer;
+
+	function ViewFlash(float DeltaTime)
+	{
+		if ( Carcass(ViewTarget) != None )
+		{
+			InstantFlash = -0.3;
+			InstantFog = vect(0.25, 0.03, 0.03);
+		}
+		Super.ViewFlash(DeltaTime);
+	}
+
+	function BeginState()
+	{
+		Super.BeginState();
+		
+		if (bTriggerEnabled)
+		{
+			bEnableWallDodge = bEnableWallDodgeOrig;
+			WallDodgeLimit = WallDodgeLimitOrig;
+			bDisableWallDodgeDodgeDelay = bDisableWallDodgeDodgeDelayOrig;
+			bEnableBounceAfterWallDodge = bEnableBounceAfterWallDodgeOrig;
+			bEnableAirDodge = bEnableAirDodgeOrig;
+			AirDodgeLimit = AirDodgeLimitOrig;
+			bEnableBounceAfterAirDodge = bEnableBounceAfterAirDodgeOrig;
+			bEnableDodgeBot = bEnableDodgeBotOrig;
+			bDisableDodge = bDisableDodgeOrig;
+			bDisableWalk = bDisableWalkOrig;
+			bDisableJump = bDisableJumpOrig;
+			bEnableCrouchDodge = bEnableCrouchDodgeOrig;
+			bEnableBounceAfterGroundDodge = bEnableBounceAfterGroundDodgeOrig;
+			bEnableDodgeLimit = bEnableDodgeLimitOrig;
+			DodgeLimit = DodgeLimitOrig;
+			bTriggerEnabled = false;
+		}
+		LastKillTime = 0;
+	}
+}
+
 defaultproperties
 {
-      bWasWallDodge=false
+      bWasWallDodge=False
+      bWasAirDodge=False
+      bTriggerEnabled=False
+      WallDodgesRemaining=1
+      AirDodgesRemaining=1
 }

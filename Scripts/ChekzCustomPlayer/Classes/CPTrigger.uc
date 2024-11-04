@@ -8,17 +8,23 @@ class CPTrigger extends Trigger;
 //=============================================================================
 // Class and UED properties.
 //=============================================================================
-var(PlayerMovement) bool bEnableDodgeBot;
-var(PlayerMovement) bool bEnableWallDodge;
-var(PlayerMovement) int WallDodgeLimit;
-var(PlayerMovement) bool bDisableDodge;
-var(PlayerMovement) bool bDisableWalk;
-var(PlayerMovement) bool bDisableJump;
-var(PlayerMovement) bool bEnableDodgeLimit;
-var(PlayerMovement) int DodgeLimit;
-var(PlayerMovement) bool bEnableCrouchDodge;
-var(PlayerMovement) bool bEnableAirDodge;
-var(PlayerMovement) bool bEnableOneKeyDodge;
+var(CPWallDodge) bool bEnableWallDodge;
+var(CPWallDodge) int WallDodgeLimit;
+var(CPWallDodge) bool bEnableBounceAfterWallDodge;
+
+var(CPAirDodge) bool bEnableAirDodge;
+var(CPAirDodge) int AirDodgeLimit;
+var(CPAirDodge) bool bEnableBounceAfterAirDodge;
+
+var(CPDodgeBot) bool bEnableDodgeBot;
+
+var(CPMovement) bool bDisableDodge;
+var(CPMovement) bool bDisableWalk;
+var(CPMovement) bool bDisableJump;
+var(CPMovement) bool bEnableCrouchDodge;
+var(CPMovement) bool bEnableBounceAfterGroundDodge;
+var(CPMovement) bool bEnableDodgeLimit;
+var(CPMovement) int DodgeLimit;
 
 //
 // Called when something touches the trigger.
@@ -99,25 +105,36 @@ function UpdateCPMoveProps(CustomPlayer CP)
 	CP.bEnableDodgeBot = bEnableDodgeBot;
 	CP.bEnableWallDodge = bEnableWallDodge;
 	CP.WallDodgeLimit = WallDodgeLimit;
+	CP.WallDodgesRemaining = WallDodgeLimit;
 	CP.bDisableDodge = bDisableDodge;
 	CP.bDisableJump = bDisableJump;
 	CP.bDisableWalk = bDisableWalk;
 	CP.bEnableCrouchDodge = bEnableCrouchDodge;
 	CP.bEnableAirDodge = bEnableAirDodge;
+	CP.AirDodgeLimit = AirDodgeLimit;
+	CP.AirDodgesRemaining = AirDodgeLimit;
 	CP.bEnableDodgeLimit = bEnableDodgeLimit;
 	CP.DodgeLimit = DodgeLimit;
+	CP.bEnableBounceAfterGroundDodge = bEnableBounceAfterGroundDodge;
+	CP.bEnableBounceAfterWallDodge = bEnableBounceAfterWallDodge;
+	Cp.bEnableBounceAfterAirDodge = bEnableBounceAfterAirDodge;
+	CP.bTriggerEnabled = true;
 }
 
 defaultproperties
 {
-      bEnableDodgeBot=False
       bEnableWallDodge=False
       WallDodgeLimit=1
+      bEnableBounceAfterWallDodge=True
+      bEnableAirDodge=False
+      AirDodgeLimit=1
+      bEnableBounceAfterAirDodge=True
+      bEnableDodgeBot=False
       bDisableDodge=False
       bDisableWalk=False
       bDisableJump=False
       bEnableCrouchDodge=False
-      bEnableAirDodge=False
+      bEnableBounceAfterGroundDodge=False
       bEnableDodgeLimit= False
       DodgeLimit=5
       bEdShouldSnap=True
