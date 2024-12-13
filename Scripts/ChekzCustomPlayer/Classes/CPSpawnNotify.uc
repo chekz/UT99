@@ -13,23 +13,47 @@ class CPSpawnNotify expands SpawnNotify;
 //=============================================================================
 var(CPWallDodge) bool bEnableWallDodge;
 var(CPWallDodge) int WallDodgeLimit;
-var bool bDisableWallDodgeDodgeDelay;
 var(CPWallDodge) bool bEnableBounceAfterWallDodge;
+var(CPWallDodge) bool bEnableMoverWallDodge;
 
 var(CPAirDodge) bool bEnableAirDodge;
 var(CPAirDodge) int AirDodgeLimit;
 var(CPAirDodge) bool bEnableBounceAfterAirDodge;
 
+var(CPLiftDodge) bool bEnableLiftDodge;
+
 var(CPDodgeBot) bool bEnableDodgeBot;
+var(CPDodgeBot) bool bEnableDodgeBotCall;
+
+var sound SamusSpaceJumpStart;
+var bool bEnableSpaceJump;
+var float SpaceJumpFallThreshold;
+var float SpaceJumpUpTreshold;
 
 var(CPMovement) bool bDisableDodge;
 var(CPMovement) bool bDisableWalk;
+var(CPMovement) bool bDisableForward;
+var(CPMovement) bool bDisableBack;
+var(CPMovement) bool bDisableRight;
+var(CPMovement) bool bDisableLeft;
+
 var(CPMovement) bool bDisableJump;
 var(CPMovement) bool bEnableCrouchDodge;
 var(CPMovement) bool bEnableBounceAfterGroundDodge;
 var(CPMovement) bool bEnableDodgeLimit;
 var(CPMovement) int DodgeLimit;
 
+var(CPPawnSpeed) bool bUpdateGroundSpeed;
+var(CPPawnSpeed) float NewGroundSpeed;
+var(CPPawnSpeed) bool bUpdateWaterSpeed;
+var(CPPawnSpeed) float NewWaterSpeed;
+var(CPPawnSpeed) bool bUpdateJumpHeight;
+var(CPPawnSpeed) float NewJumpHeight;
+var(CPPawnSpeed) bool bUpdateWalkJumpHeight;
+var(CPPawnSpeed) float NewWalkJumpHeight;
+
+var bool bEnableAssProjectile;
+var bool bEnableAssProjectileCall;
 //=============================================================================
 // Class properties.
 //=============================================================================
@@ -92,46 +116,109 @@ function class<CustomPlayer> SetCPSpawnClass(Actor A)
 //=============================================================================
 function SetCPProps(Actor A)
 {
-	SetCPMoveProps();
+	SetCPWallDodgeProps();
+	SetCPAirDodgeProps();
+	SetCPLiftDodgeProps();
+	SetCPDodgeBotProps();
+	SetCPSpaceJumpProps();
+	SetCPMovementProps();
+	SetCPSpeedProps();
+	SetCPAssProjectileProps();
 	SetCPSoundProps(A);
 }
 
-//=============================================================================
-// Sets custom player movement properties.
-//=============================================================================
-function SetCPMoveProps()
+function SetCPWallDodgeProps()
+{
+	CP.bEnableWallDodge = bEnableWallDodge;
+	CP.bEnableWallDodgeOrig = bEnableWallDodge;
+	CP.WallDodgeLimit = WallDodgeLimit;
+	CP.WallDodgeLimitOrig = WallDodgeLimit;
+	CP.bEnableMoverWallDodge = bEnableMoverWallDodge;
+	CP.bEnableMoverWallDodgeOrig = bEnableMoverWallDodge;
+	CP.bEnableBounceAfterWallDodge = bEnableBounceAfterWallDodge;
+	CP.bEnableBounceAfterWallDodgeOrig = bEnableBounceAfterWallDodge;
+}
+
+function SetCPAirDodgeProps()
+{
+	CP.bEnableAirDodge = bEnableAirDodge;
+	CP.bEnableAirDodgeOrig = bEnableAirDodge;
+	CP.AirDodgeLimit = AirDodgeLimit;
+	CP.AirDodgeLimitOrig = AirDodgeLimit;
+	CP.bEnableBounceAfterAirDodge = bEnableBounceAfterAirDodge;
+	CP.bEnableBounceAfterAirDodgeOrig = bEnableBounceAfterAirDodge;
+}
+
+function SetCPLiftDodgeProps()
+{
+	CP.bEnableLiftDodge = bEnableLiftDodge;
+	CP.bEnableLiftDodgeOrig = bEnableLiftDodge;
+}
+
+function SetCPDodgeBotProps()
 {
 	CP.bEnableDodgeBot = bEnableDodgeBot;
-	CP.bEnableWallDodge = bEnableWallDodge;
-	CP.WallDodgeLimit = WallDodgeLimit;
-	CP.bDisableWallDodgeDodgeDelay = bDisableWallDodgeDodgeDelay;
-	CP.bDisableDodge = bDisableDodge;
-	CP.bDisableWalk = bDisableWalk;
-	CP.bDisableJump = bDisableJump;
-	CP.bEnableDodgeLimit = bEnableDodgeLimit;
-	CP.DodgeLimit = DodgeLimit;
-	CP.bEnableCrouchDodge = bEnableCrouchDodge;
-	CP.bEnableAirDodge = bEnableAirDodge;
-	CP.AirDodgeLimit = AirDodgeLimit;
-	CP.bEnableBounceAfterGroundDodge = bEnableBounceAfterGroundDodge;
-	CP.bEnableBounceAfterWallDodge = bEnableBounceAfterWallDodge;
-	CP.bEnableBounceAfterAirDodge = bEnableBounceAfterAirDodge;
-
 	CP.bEnableDodgeBotOrig = bEnableDodgeBot;
-	CP.bEnableWallDodgeOrig = bEnableWallDodge;
-	CP.WallDodgeLimitOrig = WallDodgeLimit;
-	CP.bDisableWallDodgeDodgeDelayOrig = bDisableWallDodgeDodgeDelay;
+	CP.bEnableDodgeBotCall = bEnableDodgeBotCall;
+	CP.bEnableDodgeBotCallOrig = bEnableDodgeBotCall;
+}
+
+function SetCPSpaceJumpProps()
+{
+	CP.JumpSoundOrig = CP.JumpSound;
+	CP.bEnableSpaceJump = bEnableSpaceJump;
+	CP.bEnableSpaceJumpOrig = bEnableSpaceJump;
+	CP.SpaceJumpFallThreshold = SpaceJumpFallThreshold;
+	CP.SpaceJumpFallThresholdOrig = SpaceJumpFallThreshold;
+}
+
+function SetCPMovementProps()
+{
+	CP.bDisableDodge = bDisableDodge;
 	CP.bDisableDodgeOrig = bDisableDodge;
+	CP.bDisableWalk = bDisableWalk;
 	CP.bDisableWalkOrig = bDisableWalk;
+	CP.bDisableJump = bDisableJump;
 	CP.bDisableJumpOrig = bDisableJump;
+	CP.bEnableDodgeLimit = bEnableDodgeLimit;
 	CP.bEnableDodgeLimitOrig = bEnableDodgeLimit;
+	CP.DodgeLimit = DodgeLimit;
 	CP.DodgeLimitOrig = DodgeLimit;
-	CP.bEnableCrouchDodgeOrig = bEnableCrouchDodge;
-	CP.bEnableAirDodgeOrig = bEnableAirDodge;
-	CP.AirDodgeLimitOrig = AirDodgeLimit;
+	CP.bEnableBounceAfterGroundDodge = bEnableBounceAfterGroundDodge;
 	CP.bEnableBounceAfterGroundDodgeOrig = bEnableBounceAfterGroundDodge;
-	CP.bEnableBounceAfterWallDodgeOrig = bEnableBounceAfterWallDodge;
-	CP.bEnableBounceAfterAirDodgeOrig = bEnableBounceAfterAirDodge;
+	CP.bEnableCrouchDodge = bEnableCrouchDodge;
+	CP.bEnableCrouchDodgeOrig = bEnableCrouchDodge;
+}
+
+function SetCPSpeedProps()
+{
+	if (bUpdateGroundSpeed)
+		CP.GroundSpeed = NewGroundSpeed;
+
+	if (bUpdateWaterSpeed)
+		CP.WaterSpeed = NewWaterSpeed;
+
+	if (bUpdateJumpHeight)
+		CP.JumpZ = NewJumpHeight;
+
+	if (bUpdateWalkJumpHeight)
+		CP.WalkJumpZ = NewWalkJumpHeight;
+
+	CP.bUpdateWalkJumpHeight = bUpdateWalkJumpHeight;
+	CP.bUpdateWalkJumpHeightOrig = bUpdateWalkJumpHeight;
+
+	CP.GroundSpeedOrig = CP.GroundSpeed;
+	CP.WaterSpeedOrig = CP.WaterSpeed;
+	CP.JumpZOrig = CP.JumpZ;
+	CP.WalkJumpZOrig = CP.default.JumpZ;
+}
+
+function SetCPAssProjectileProps()
+{
+	CP.bEnableAssProjectile = bEnableAssProjectile;
+	CP.bEnableAssProjectileOrig = bEnableAssProjectile;
+	CP.bEnableAssProjectileCall = bEnableAssProjectileCall;
+	CP.bEnableAssProjectileCallOrig = bEnableAssProjectileCall;
 }
 
 //=============================================================================
@@ -169,16 +256,28 @@ defaultproperties
 {
       bEnableWallDodge=False
       WallDodgeLimit=1
-      bDisableWallDodgeDodgeDelay=True
       bEnableBounceAfterWallDodge=True
+      bEnableMoverWallDodge=False
       bEnableAirDodge=False
       AirDodgeLimit=1
       bEnableBounceAfterAirDodge=True
       bEnableDodgeBot=False
+      bEnableDodgeBotCall=False
+      bEnableLiftDodge=False
+      bEnableSpaceJump=False
+      SpaceJumpFallThreshold=-275.000000
       bDisableDodge=False
       bDisableWalk=False
       bDisableJump=False
       bEnableCrouchDodge=False
+      bUpdateGroundSpeed=False
+      NewGroundSpeed=400.000000
+      bUpdateWaterSpeed=False
+      NewWaterSpeed=200.000000
+      bUpdateJumpHeight=False
+      NewJumpHeight=357.500000
+      bUpdateWalkJumpHeight=False
+      NewWalkJumpHeight=325.000000
       bEnableBounceAfterGroundDodge=False
       bEnableDodgeLimit= False
       DodgeLimit=5
